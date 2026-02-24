@@ -1,0 +1,53 @@
+# ============================================
+# Docker Compose para FotoGestor con MySQL
+# Configuración para despliegue en Dokploy
+# ============================================
+
+services:
+  fotogestor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fotogestor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Base de datos MySQL
+      - DATABASE_URL=mysql://fotogestor:fotogestor123@mysql:3306/fotogestor
+      # NextAuth Secret - CAMBIAR EN PRODUCCIÓN
+      - NEXTAUTH_SECRET=tu-clave-secreta-muy-segura-cambiar-en-produccion
+      # URL de la aplicación - CAMBIAR POR TU DOMINIO
+      - NEXTAUTH_URL=http://localhost:3000
+      - NODE_ENV=production
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/auth/session"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  mysql:
+    image: mysql:8.0
+    container_name: fotogestor-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword123
+      - MYSQL_DATABASE=fotogestor
+      - MYSQL_USER=fotogestor
+      - MYSQL_PASSWORD=fotogestor123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql-data:
+    driver: local

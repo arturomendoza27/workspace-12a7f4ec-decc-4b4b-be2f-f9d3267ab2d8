@@ -1,0 +1,35 @@
+# ============================================
+# Docker Compose para FotoGestor
+# Configuración para despliegue en Dokploy
+# ============================================
+
+services:
+  fotogestor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fotogestor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Base de datos - SQLite (por defecto)
+      - DATABASE_URL=file:/app/db/custom.db
+      # NextAuth Secret - CAMBIAR EN PRODUCCIÓN
+      - NEXTAUTH_SECRET=tu-clave-secreta-muy-segura-cambiar-en-produccion
+      # URL de la aplicación - CAMBIAR POR TU DOMINIO
+      - NEXTAUTH_URL=http://localhost:3000
+      - NODE_ENV=production
+    volumes:
+      # Persistir base de datos SQLite
+      - fotogestor-db:/app/db
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/auth/session"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  fotogestor-db:
+    driver: local

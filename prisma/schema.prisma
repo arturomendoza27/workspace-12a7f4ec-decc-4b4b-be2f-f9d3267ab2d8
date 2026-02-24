@@ -6,10 +6,28 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ============================================
+// CONFIGURACIÓN DE BASE DE DATOS
+// Descomenta la opción que necesites:
+// ============================================
+
+// Opción 1: SQLite (Por defecto - Desarrollo local)
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+// Opción 2: MySQL (Producción)
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+// Opción 3: PostgreSQL (Producción)
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
 
 // ============================================
 // MODELO: USUARIO - Sistema de autenticación con roles
