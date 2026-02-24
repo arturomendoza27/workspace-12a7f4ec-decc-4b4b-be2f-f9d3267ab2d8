@@ -9,10 +9,10 @@ async function main() {
   // Crear usuario administrador por defecto
   const adminPassword = await hash("admin123", 10);
   const admin = await prisma.user.upsert({
-    where: { email: "admin@fotogestor.com" },
+    where: { email: "artmen27@fotogestor.com" },
     update: {},
     create: {
-      email: "admin@fotogestor.com",
+      email: "artmen27@fotogestor.com",
       password: adminPassword,
       name: "Administrador",
       role: "ADMIN",
@@ -36,32 +36,7 @@ async function main() {
   });
   console.log("✅ Usuario operador creado:", operador.email);
 
-  // Crear algunos clientes de ejemplo
-  const clientes = [
-    {
-      cedula: "12345678",
-      nombreCompleto: "Juan Pérez García",
-      rh: "O+"
-    },
-    {
-      cedula: "87654321",
-      nombreCompleto: "María López Rodríguez",
-      rh: "A+"
-    },
-    {
-      cedula: "11223344",
-      nombreCompleto: "Carlos Martínez Sánchez",
-      rh: "B-"
-    }
-  ];
-
-  for (const cliente of clientes) {
-    await prisma.client.upsert({
-      where: { cedula: cliente.cedula },
-      update: {},
-      create: cliente
-    });
-  }
+ 
   console.log("✅ Clientes de ejemplo creados");
 
   console.log("🎉 Seed completado exitosamente!");

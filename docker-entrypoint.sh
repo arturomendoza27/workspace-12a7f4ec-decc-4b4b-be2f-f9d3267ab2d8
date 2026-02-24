@@ -6,15 +6,14 @@ echo "🚀 Iniciando FotoGestor..."
 echo "⏳ Esperando base de datos..."
 sleep 5
 
-echo "📦 Ejecutando migraciones en producción (forzado)..."
-if [ -d "prisma/migrations" ]; then
-  npx prisma migrate deploy || echo "⚠️ Error ejecutando migrate deploy"
-else
-  echo "⚠️ No existe carpeta prisma/migrations"
-fi
+echo "🧱 Forzando estructura de base de datos desde schema.prisma..."
+npx prisma db push --accept-data-loss || echo "⚠️ Error en db push"
+
+echo "🌱 Ejecutando seed de base de datos..."
+npx prisma db seed || echo "⚠️ Seed no ejecutado"
 
 echo "🔧 Generando Prisma Client..."
-npx prisma generate || echo "⚠️ Error generando prisma client"
+npx prisma generate
 
-echo "🚀 Iniciando servidor Next.js..."
+echo "✅ Iniciando servidor Next.js..."
 exec node server.js
