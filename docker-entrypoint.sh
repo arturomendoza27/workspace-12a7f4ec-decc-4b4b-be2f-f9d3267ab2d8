@@ -3,17 +3,17 @@ set -e
 
 echo "🚀 Iniciando FotoGestor..."
 
-echo "⏳ Esperando base de datos..."
-sleep 5
+echo "📁 Preparando carpeta SQLite..."
+mkdir -p /app/db
 
-echo "🧱 Forzando estructura de base de datos desde schema.prisma..."
-npx prisma db push --accept-data-loss || echo "⚠️ Error en db push"
+echo "🔧 Generando Prisma Client (local)..."
+./node_modules/.bin/prisma generate
 
-echo "🌱 Ejecutando seed de base de datos..."
-npx prisma db seed || echo "⚠️ Seed no ejecutado"
+echo "🧱 Aplicando schema a SQLite..."
+./node_modules/.bin/prisma db push --accept-data-loss
 
-echo "🔧 Generando Prisma Client..."
-npx prisma generate
+echo "🌱 Ejecutando seed..."
+./node_modules/.bin/prisma db seed || echo "⚠️ Seed no configurado"
 
-echo "✅ Iniciando servidor Next.js..."
+echo "✅ Iniciando servidor..."
 exec node server.js

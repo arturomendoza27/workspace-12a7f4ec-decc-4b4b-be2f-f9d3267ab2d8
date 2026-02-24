@@ -61,7 +61,7 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
+COPY --from=builder /app/node_modules ./node_modules
 # Directorio para SQLite / DB local
 RUN mkdir -p /app/db && chown -R nextjs:nodejs /app
 
