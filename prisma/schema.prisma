@@ -1,0 +1,80 @@
+// ============================================
+// ESQUEMA DE BASE DE DATOS - SISTEMA DE GESTIÓN DE CLIENTES Y FOTOS
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELO: USUARIO - Sistema de autenticación con roles
+// ============================================
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  password      String   // Hash de la contraseña
+  name          String
+  role          Role     @default(OPERADOR)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relaciones
+  photoRecords  PhotoRecord[]
+}
+
+// Enum para los roles de usuario
+enum Role {
+  ADMIN     // Acceso completo: CRUD usuarios, clientes, fotos
+  OPERADOR  // Acceso limitado: Solo clientes y fotos
+}
+
+// ============================================
+// MODELO: CLIENTE - Información personal del cliente
+// ============================================
+model Client {
+  id              String   @id @default(cuid())
+  cedula          String   @unique  // Cédula de identidad (ID único)
+  nombreCompleto  String            // Nombre completo (un campo)
+  rh              String?           // Tipo de sangre (opcional)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relaciones
+  photoRecords    PhotoRecord[]
+}
+
+// ============================================
+// MODELO: REGISTRO DE FOTO - 3 tipos de foto por cliente
+// Los campos de foto almacenan la referencia/número de cada foto
+// ============================================
+model PhotoRecord {
+  id              String   @id @default(cuid())
+  
+  // Tres tipos de foto - cada uno almacena el número/referencia de la foto
+  fotoConGorra    String?           // Número/Referencia de foto con gorra
+  fotoSinGorra    String?           // Número/Referencia de foto sin gorra
+  fotoDeFrente    String?           // Número/Referencia de foto de frente
+  
+  // Estados
+  editada         Boolean  @default(false)  // Estado: Foto editada
+  impresa         Boolean  @default(false)  // Estado: Foto impresa
+  publicada       Boolean  @default(false)  // Estado: Foto publicada
+  notas           String?           // Notas adicionales (opcional)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relaciones
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  @@index([clientId])
+  @@index([userId])
+}
